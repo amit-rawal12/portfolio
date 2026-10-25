@@ -36,16 +36,37 @@ function showToast(message, duration = 3000) {
 const menuToggle = document.getElementById("menuToggle");
 const mainNav = document.getElementById("mainNav");
 if (menuToggle && mainNav) {
-  menuToggle.addEventListener("click", () => {
+  function closeMenu() {
+    mainNav.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.textContent = "☰";
+  }
+
+  menuToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
     const isOpen = mainNav.classList.toggle("open");
     menuToggle.setAttribute("aria-expanded", String(isOpen));
+    menuToggle.textContent = isOpen ? "✕" : "☰";
   });
 
   mainNav.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", () => {
-      mainNav.classList.remove("open");
-      menuToggle.setAttribute("aria-expanded", "false");
+      closeMenu();
     });
+  });
+
+  // Close when clicking outside
+  document.addEventListener("click", (e) => {
+    if (mainNav.classList.contains("open") && !mainNav.contains(e.target) && e.target !== menuToggle) {
+      closeMenu();
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mainNav.classList.contains("open")) {
+      closeMenu();
+    }
   });
 }
 
